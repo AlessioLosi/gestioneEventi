@@ -1,11 +1,14 @@
 package com.gestioneEventi.Entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -14,7 +17,8 @@ import java.util.UUID;
 @Setter
 @ToString
 @NoArgsConstructor
-public class User {
+@JsonIgnoreProperties({"password", "ruolo", "accountNonLocked", "credentialsNonExpired", "accountNonExpired", "authorities", "enabled"})
+public class User implements UserDetails {
     @Id
     @GeneratedValue
     @Setter(AccessLevel.NONE)
@@ -23,6 +27,7 @@ public class User {
     private String cognome;
     private String email;
     private String password;
+    @Enumerated(EnumType.STRING)
     private Role ruolo;
 
     public User(String nome, String cognome, String email, String password, Role ruolo) {
@@ -31,5 +36,17 @@ public class User {
         this.email = email;
         this.password = password;
         this.ruolo = ruolo;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+
+        return List.of(new SimpleGrantedAuthority(this.ruolo.name()));
+    }
+
+
+    @Override
+    public String getUsername() {
+        return this.getEmail();
     }
 }

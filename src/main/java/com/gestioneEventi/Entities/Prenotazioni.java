@@ -1,10 +1,12 @@
 package com.gestioneEventi.Entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Entity
 @Table(name = "prenotazioni")
@@ -14,9 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Prenotazioni {
     @Id
-    @GeneratedValue
-    @Setter(AccessLevel.NONE)
-    private UUID id;
+    private Long id;
     private LocalDate data;
     @ManyToOne
     @JoinColumn(name = "evento_id")
@@ -25,7 +25,8 @@ public class Prenotazioni {
     @JoinColumn(name = "user_id")
     private User utente;
 
-    public Prenotazioni(LocalDate data, Event event, User utente) {
+    public Prenotazioni(Long id, LocalDate data, Event event, User utente) {
+        this.id = id;
         this.data = data;
         this.event = event;
         this.utente = utente;
