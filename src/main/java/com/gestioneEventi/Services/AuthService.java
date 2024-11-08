@@ -5,6 +5,7 @@ import com.gestioneEventi.Exceptions.UnauthorizedException;
 import com.gestioneEventi.Payloads.NewUserLoginDTO;
 import com.gestioneEventi.Tools.JWT;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,9 +16,13 @@ public class AuthService {
     @Autowired
     private JWT jwt;
 
+    @Autowired
+    private PasswordEncoder bcrypt;
+
     public String checkCredentialsAndGenerateToken(NewUserLoginDTO body) {
+
         User found = this.usersService.findByEmail(body.email());
-        if (found.getPassword().equals(body.password())) {
+        if (bcrypt.matches(body.password(), found.getPassword())) {
             String accessToken = jwt.createToken(found);
             return accessToken;
         } else {
