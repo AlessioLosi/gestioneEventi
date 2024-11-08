@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -18,6 +19,8 @@ import java.util.UUID;
 public class UsersService {
     @Autowired
     private UserRepository uR;
+    @Autowired
+    private PasswordEncoder bcrypt;
 
     public User save(NewUserDTO body) {
         this.uR.findByEmail(body.email()).ifPresent(
@@ -26,7 +29,7 @@ public class UsersService {
                 }
         );
 
-        User newUser = new User(body.nome(), body.cognome(), body.email(), body.password(),
+        User newUser = new User(body.nome(), body.cognome(), body.email(), bcrypt.encode(body.password()),
                 body.ruolo());
 
         return this.uR.save(newUser);
